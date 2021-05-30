@@ -15,6 +15,7 @@
 		AA335CE62663AC6A009255E4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA335CE42663AC6A009255E4 /* LaunchScreen.storyboard */; };
 		AA335CEE2663C8D4009255E4 /* nouns.json in Resources */ = {isa = PBXBuildFile; fileRef = AA335CED2663C8D4009255E4 /* nouns.json */; };
 		AA335CF02663C8F3009255E4 /* Nouns.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA335CEF2663C8F3009255E4 /* Nouns.swift */; };
+		AA335CF2266401D4009255E4 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA335CF1266401D4009255E4 /* Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		AA335CE72663AC6A009255E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AA335CED2663C8D4009255E4 /* nouns.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = nouns.json; sourceTree = "<group>"; };
 		AA335CEF2663C8F3009255E4 /* Nouns.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Nouns.swift; sourceTree = "<group>"; };
+		AA335CF1266401D4009255E4 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,8 +69,9 @@
 				AA335CE22663AC6A009255E4 /* Assets.xcassets */,
 				AA335CE42663AC6A009255E4 /* LaunchScreen.storyboard */,
 				AA335CE72663AC6A009255E4 /* Info.plist */,
-				AA335CED2663C8D4009255E4 /* nouns.json */,
 				AA335CEF2663C8F3009255E4 /* Nouns.swift */,
+				AA335CED2663C8D4009255E4 /* nouns.json */,
+				AA335CF1266401D4009255E4 /* Extensions.swift */,
 			);
 			path = Hangman;
 			sourceTree = "<group>";
@@ -144,6 +147,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA335CF2266401D4009255E4 /* Extensions.swift in Sources */,
 				AA335CDE2663AC6A009255E4 /* ViewController.swift in Sources */,
 				AA335CF02663C8F3009255E4 /* Nouns.swift in Sources */,
 				AA335CDA2663AC6A009255E4 /* AppDelegate.swift in Sources */,

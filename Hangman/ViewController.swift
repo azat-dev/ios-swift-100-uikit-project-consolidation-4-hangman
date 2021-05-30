@@ -7,21 +7,79 @@
 
 import UIKit
 
+class RoundedNumber: UIView {
+    var valueLabel: UILabel!
+    var value = 0 {
+        didSet {
+            valueLabel.text = String(value)
+        }
+    }
+    
+    private func setupView() {
+        valueLabel = UILabel()
+        valueLabel.translatesAutoresizingMaskIntoConstraints = false
+        valueLabel.textAlignment = .center
+        
+        valueLabel.font = UIFont.prefferedFont(for: .title2, weight: .bold)
+        valueLabel.adjustsFontForContentSizeCategory = true
+        value = 0
+        
+        layer.borderColor = UIColor.red.cgColor
+        layer.borderWidth = 2
+        layer.borderColor = UIColor(named: "RoundedNumberBorderColor")!.cgColor
+        layer.cornerRadius = 21
+        addSubview(valueLabel)
+        
+        NSLayoutConstraint.activate([
+            heightAnchor.constraint(equalToConstant: 56),
+            widthAnchor.constraint(equalToConstant: 68),
+            
+            valueLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            valueLabel.centerYAnchor.constraint(equalTo: centerYAnchor)
+        ])
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupView()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupView()
+    }
+    
+    convenience init() {
+        self.init(frame: CGRect.zero)
+    }
+}
+
 class ViewController: UIViewController {
     
     var currentText: UITextField!
-    var triesLabel: UILabel!
-    var roundLabel: UILabel!
+    var triesLabel: RoundedNumber!
+    var roundLabel: RoundedNumber!
+    var scoreLabel: RoundedNumber!
     
     var words = [String]()
     var word = ""
     var openedCharacters = [Character]()
     
-    var round = -1
+    var score = 0 {
+        didSet {
+            scoreLabel.value = score
+        }
+    }
+    
+    var round = -1 {
+        didSet {
+            roundLabel.value = round
+        }
+    }
     
     var tries = 0 {
         didSet {
-            triesLabel.text = "Tries: \(tries)"
+            triesLabel.value = tries
         }
     }
     
@@ -53,26 +111,109 @@ class ViewController: UIViewController {
         }
     }
     
-    func initViews() {
-        view = UIView()
-        view.backgroundColor = UIColor(named: "BackgroundColor")
+    func getRoundedViewTitle(text: String) -> UILabel {
+        let roundTitle = UILabel()
+        roundTitle.text = text
+        roundTitle.font = UIFont.prefferedFont(for: .caption2, weight: .semibold)
+        roundTitle.adjustsFontForContentSizeCategory = true
+        roundTitle.translatesAutoresizingMaskIntoConstraints = false
         
-        triesLabel = UILabel()
+        return roundTitle
+    }
+    
+    @objc func resetButtonTapped() {
+        openedCharacters = []
+        tries = 0
+        round = -1
+        score = 0
+        
+        startNewRound()
+    }
+    
+    func initCornerViews() {
+        let resetButtonTitle = getRoundedViewTitle(text: "RESET")
+        view.addSubview(resetButtonTitle)
+        
+        let resetButton = UIButton(type: .system)
+        resetButton.translatesAutoresizingMaskIntoConstraints = false
+        resetButton.setImage(.init(systemName: "arrow.clockwise"), for: .normal)
+        resetButton.layer.borderWidth = 2
+        resetButton.layer.borderColor = UIColor(named: "RoundedNumberBorderColor")!.cgColor
+        resetButton.layer.cornerRadius = 21
+        resetButton.addTarget(self, action: #selector(resetButtonTapped), for: .touchUpInside)
+        view.addSubview(resetButton)
+        
+        let triesTitle = getRoundedViewTitle(text: "TRIES")
+        view.addSubview(triesTitle)
+        
+        triesLabel = RoundedNumber()
         triesLabel.translatesAutoresizingMaskIntoConstraints = false
-        triesLabel.font = .systemFont(ofSize: 20)
-        triesLabel.textAlignment = .center
         tries = 0
         view.addSubview(triesLabel)
         
+        let roundTitle = getRoundedViewTitle(text: "ROUND")
+        view.addSubview(roundTitle)
+        
+        roundLabel = RoundedNumber()
+        roundLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(roundLabel)
+        
+        let scoreTitle = getRoundedViewTitle(text: "SCORE")
+        view.addSubview(scoreTitle)
+        
+        scoreLabel = RoundedNumber()
+        scoreLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(scoreLabel)
+        
+        
+        NSLayoutConstraint.activate([
+            resetButton.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 15),
+            resetButton.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor, constant: 35),
+            
+            resetButton.widthAnchor.constraint(equalTo: roundLabel.widthAnchor),
+            resetButton.heightAnchor.constraint(equalTo: roundLabel.heightAnchor),
+            
+            resetButtonTitle.centerXAnchor.constraint(equalTo: resetButton.centerXAnchor),
+            resetButtonTitle.bottomAnchor.constraint(equalTo: resetButton.topAnchor, constant: -5),
+            
+            triesLabel.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor, constant: 35),
+            triesLabel.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -15),
+            
+            triesTitle.bottomAnchor.constraint(equalTo: triesLabel.topAnchor, constant: -5),
+            triesTitle.centerXAnchor.constraint(equalTo: triesLabel.centerXAnchor),
+            
+            roundLabel.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: -15),
+            roundLabel.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -15),
+            
+            roundTitle.bottomAnchor.constraint(equalTo: roundLabel.topAnchor, constant: -5),
+            roundTitle.centerXAnchor.constraint(equalTo: roundLabel.centerXAnchor),
+            
+            scoreLabel.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: -15),
+            scoreLabel.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 15),
+            
+            scoreTitle.bottomAnchor.constraint(equalTo: scoreLabel.topAnchor, constant: -5),
+            scoreTitle.centerXAnchor.constraint(equalTo: scoreLabel.centerXAnchor),
+        ])
+    }
+    
+    func initCentralViews() {
+        let centralGroup = UIStackView()
+        centralGroup.axis = .vertical
+        centralGroup.alignment = .center
+        centralGroup.distribution = .equalSpacing
+        centralGroup.spacing = 60
+        centralGroup.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(centralGroup)
+        
         currentText = UITextField()
         currentText.translatesAutoresizingMaskIntoConstraints = false
-        currentText.font = UIFont.preferredFont(forTextStyle: .largeTitle)
+        currentText.font = UIFont.prefferedFont(for: .largeTitle, weight: .bold)
         currentText.adjustsFontForContentSizeCategory = true
         currentText.placeholder = "??????????"
         currentText.isUserInteractionEnabled = false
         currentText.textAlignment = .center
-        view.addSubview(currentText)
-        
+        centralGroup.addArrangedSubview(currentText)
+
         let guessButton = UIButton(type: .system)
         guessButton.translatesAutoresizingMaskIntoConstraints = false
         guessButton.titleLabel?.textAlignment = .center
@@ -83,25 +224,26 @@ class ViewController: UIViewController {
         guessButton.setTitleColor(.white, for: .normal)
         guessButton.titleLabel?.font = UIFont.preferredFont(forTextStyle: .headline)
         guessButton.titleLabel?.adjustsFontForContentSizeCategory = true
-        
-        view.addSubview(guessButton)
-        
+        centralGroup.addArrangedSubview(guessButton)
+
+    
         NSLayoutConstraint.activate([
-            triesLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            triesLabel.bottomAnchor.constraint(equalTo: currentText.topAnchor, constant: -20),
-            
-            currentText.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            currentText.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            
-            guessButton.topAnchor.constraint(equalTo: currentText.bottomAnchor, constant: 60),
-            guessButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            
-            
             guessButton.titleLabel!.leadingAnchor.constraint(equalTo: guessButton.leadingAnchor, constant: 24),
             guessButton.titleLabel!.trailingAnchor.constraint(equalTo: guessButton.trailingAnchor, constant: -24),
             guessButton.titleLabel!.topAnchor.constraint(equalTo: guessButton.topAnchor, constant: 22),
             guessButton.titleLabel!.bottomAnchor.constraint(equalTo: guessButton.bottomAnchor, constant: -22),
+            
+            centralGroup.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            centralGroup.centerYAnchor.constraint(equalTo: view.centerYAnchor),
         ])
+    }
+    
+    func initViews() {
+        view = UIView()
+        view.backgroundColor = UIColor(named: "BackgroundColor")
+        
+        initCornerViews()
+        initCentralViews()
     }
     
     func showErrorAlert(text: String) {
