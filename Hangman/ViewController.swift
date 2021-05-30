@@ -12,11 +12,35 @@ class ViewController: UIViewController {
     var currentText: UITextField!
     var triesLabel: UILabel!
 
+    var round = 0
+    var words = [String]()
     var word = ""
     var openedCharacters = [Character]()
     var tries = 0 {
         didSet {
             triesLabel.text = "Tries: \(tries)"
+        }
+    }
+    
+    func startNewRound() {
+        
+    }
+    
+    func loadWords() {
+        guard let url = Bundle.main.url(forResource: "nouns", withExtension: "json") else {
+            return
+        }
+        
+        guard let rawData = try? Data(contentsOf: url) else {
+            return
+        }
+        
+        if let nounsData = Nouns(json: rawData) {
+            words = nounsData.nouns
+        }
+        
+        DispatchQueue.main.async {
+            self.startNewRound()
         }
     }
     
@@ -121,7 +145,7 @@ class ViewController: UIViewController {
                 return
             }
             
-            self?.submitCharacter(character: text.first!)
+            self?.submitCharacter(character: text.first!.lowercased())
         }
 
         alert.addAction(.init(title: "Cancel", style: .cancel))
@@ -135,6 +159,10 @@ class ViewController: UIViewController {
         
         title = "Hangman"
         initViews()
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            self.loadWords()
+        }
     }
 }
 
