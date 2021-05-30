@@ -55,7 +55,7 @@ class ViewController: UIViewController {
     
     func initViews() {
         view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(named: "BackgroundColor")
         
         triesLabel = UILabel()
         triesLabel.translatesAutoresizingMaskIntoConstraints = false
