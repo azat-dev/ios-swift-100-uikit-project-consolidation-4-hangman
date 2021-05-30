@@ -66,7 +66,8 @@ class ViewController: UIViewController {
         
         currentText = UITextField()
         currentText.translatesAutoresizingMaskIntoConstraints = false
-        currentText.font = .systemFont(ofSize: 44)
+        currentText.font = UIFont.preferredFont(forTextStyle: .largeTitle)
+        currentText.adjustsFontForContentSizeCategory = true
         currentText.placeholder = "??????????"
         currentText.isUserInteractionEnabled = false
         currentText.textAlignment = .center
@@ -75,10 +76,15 @@ class ViewController: UIViewController {
         let guessButton = UIButton(type: .system)
         guessButton.translatesAutoresizingMaskIntoConstraints = false
         guessButton.titleLabel?.textAlignment = .center
-        guessButton.setTitle("Guess the Letter", for: .normal)
+        guessButton.setTitle("Guess the Letter".uppercased(), for: .normal)
         guessButton.addTarget(self, action: #selector(guessButtonTapped), for: .touchUpInside)
-        view.addSubview(guessButton)
+        guessButton.backgroundColor = UIColor(named: "GuessButtonColor")
+        guessButton.layer.cornerRadius = 21
+        guessButton.setTitleColor(.white, for: .normal)
+        guessButton.titleLabel?.font = UIFont.preferredFont(forTextStyle: .headline)
+        guessButton.titleLabel?.adjustsFontForContentSizeCategory = true
         
+        view.addSubview(guessButton)
         
         NSLayoutConstraint.activate([
             triesLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -87,9 +93,14 @@ class ViewController: UIViewController {
             currentText.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             currentText.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             
-            guessButton.topAnchor.constraint(equalTo: currentText.bottomAnchor, constant: 20),
+            guessButton.topAnchor.constraint(equalTo: currentText.bottomAnchor, constant: 60),
             guessButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            guessButton.heightAnchor.constraint(equalToConstant: 44)
+            
+            
+            guessButton.titleLabel!.leadingAnchor.constraint(equalTo: guessButton.leadingAnchor, constant: 24),
+            guessButton.titleLabel!.trailingAnchor.constraint(equalTo: guessButton.trailingAnchor, constant: -24),
+            guessButton.titleLabel!.topAnchor.constraint(equalTo: guessButton.topAnchor, constant: 22),
+            guessButton.titleLabel!.bottomAnchor.constraint(equalTo: guessButton.bottomAnchor, constant: -22),
         ])
     }
     
