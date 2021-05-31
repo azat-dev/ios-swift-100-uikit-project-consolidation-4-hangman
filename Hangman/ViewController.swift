@@ -56,30 +56,29 @@ class RoundedNumber: UIView {
 
 class ViewController: UIViewController {
     
-    var currentText: UITextField!
-    var triesLabel: RoundedNumber!
+    var currentText: UILabel!
+    var wrongTriesLabel: RoundedNumber!
     var roundLabel: RoundedNumber!
     var scoreLabel: RoundedNumber!
     
     var words = [String]()
     var word = ""
     var openedCharacters = [Character]()
-    
     var score = 0 {
         didSet {
             scoreLabel.value = score
         }
     }
     
-    var round = -1 {
+    var round = 0 {
         didSet {
             roundLabel.value = round
         }
     }
     
-    var tries = 0 {
+    var wrongTries = 0 {
         didSet {
-            triesLabel.value = tries
+            wrongTriesLabel.value = wrongTries
         }
     }
     
@@ -123,8 +122,8 @@ class ViewController: UIViewController {
     
     @objc func resetButtonTapped() {
         openedCharacters = []
-        tries = 0
-        round = -1
+        wrongTries = 0
+        round = 0
         score = 0
         
         startNewRound()
@@ -143,13 +142,13 @@ class ViewController: UIViewController {
         resetButton.addTarget(self, action: #selector(resetButtonTapped), for: .touchUpInside)
         view.addSubview(resetButton)
         
-        let triesTitle = getRoundedViewTitle(text: "TRIES")
+        let triesTitle = getRoundedViewTitle(text: "WRONG TRIES")
         view.addSubview(triesTitle)
         
-        triesLabel = RoundedNumber()
-        triesLabel.translatesAutoresizingMaskIntoConstraints = false
-        tries = 0
-        view.addSubview(triesLabel)
+        wrongTriesLabel = RoundedNumber()
+        wrongTriesLabel.translatesAutoresizingMaskIntoConstraints = false
+        wrongTries = 0
+        view.addSubview(wrongTriesLabel)
         
         let roundTitle = getRoundedViewTitle(text: "ROUND")
         view.addSubview(roundTitle)
@@ -176,11 +175,11 @@ class ViewController: UIViewController {
             resetButtonTitle.centerXAnchor.constraint(equalTo: resetButton.centerXAnchor),
             resetButtonTitle.bottomAnchor.constraint(equalTo: resetButton.topAnchor, constant: -5),
             
-            triesLabel.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor, constant: 35),
-            triesLabel.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -15),
+            wrongTriesLabel.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor, constant: 35),
+            wrongTriesLabel.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -15),
             
-            triesTitle.bottomAnchor.constraint(equalTo: triesLabel.topAnchor, constant: -5),
-            triesTitle.centerXAnchor.constraint(equalTo: triesLabel.centerXAnchor),
+            triesTitle.bottomAnchor.constraint(equalTo: wrongTriesLabel.topAnchor, constant: -5),
+            triesTitle.centerXAnchor.constraint(equalTo: wrongTriesLabel.centerXAnchor),
             
             roundLabel.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: -15),
             roundLabel.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -15),
@@ -205,11 +204,11 @@ class ViewController: UIViewController {
         centralGroup.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(centralGroup)
         
-        currentText = UITextField()
+        currentText = UILabel()
         currentText.translatesAutoresizingMaskIntoConstraints = false
         currentText.font = UIFont.prefferedFont(for: .largeTitle, weight: .bold)
         currentText.adjustsFontForContentSizeCategory = true
-        currentText.placeholder = "??????????"
+        currentText.text = "??????????"
         currentText.isUserInteractionEnabled = false
         currentText.textAlignment = .center
         centralGroup.addArrangedSubview(currentText)
@@ -252,7 +251,7 @@ class ViewController: UIViewController {
             message: text,
             preferredStyle: .alert
         )
-        alert.addAction(.init(title: "Cancel", style: .cancel))
+        alert.addAction(.init(title: "Continue", style: .cancel))
         
         present(alert, animated: true)
     }
@@ -287,22 +286,31 @@ class ViewController: UIViewController {
     }
     
     func submitCharacter(character: Character) {
-        tries += 1
+        wrongTries += 1
         
         guard !openedCharacters.contains(character) else {
+            score -= 1
             showErrorAlert(text: "The character \"\(character.uppercased())\" was opened before")
             return
         }
         
         guard word.contains(character) else {
+            score -= 1
             showErrorAlert(text: "The word doesn't contain the character: \"\(character.uppercased())\"")
             return
         }
         
-        openedCharacters.append(character)
-        currentText.text = getWordWithPlaceholders()
+        if wrongTries == 7 {
+            showErrorAlert(text: "You are ded");
+            return
+        }
         
-        let isWordCompleted = false
+        score += 1
+        openedCharacters.append(character)
+        let textWithPlaceholders = getWordWithPlaceholders()
+        currentText.text = textWithPlaceholders
+        
+        let isWordCompleted = !textWithPlaceholders.contains("?")
         
         if !isWordCompleted {
             return
